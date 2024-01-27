@@ -100,21 +100,27 @@ public class VideoRespositoryTest {
         videoModel2.setFavorito(1000);
         videoModel2.setVisualizacoes(100001);
 
+        List<VideoModel> videos = Arrays.asList(videoModel1,videoModel2);
+
         Mono<VideoModel> videlModel1Mono = Mono.just(videoModel1);
         when(videoRepository.save(any(VideoModel.class))).thenReturn(videlModel1Mono);
-
-        //Act -- executa
-
         var videoArmazenado1 = videoRepository.save(videoModel1);
+
+        Mono<VideoModel> videlModel2Mono = Mono.just(videoModel2);
+        when(videoRepository.save(any(VideoModel.class))).thenReturn(videlModel2Mono);
         var videoArmazenado2 = videoRepository.save(videoModel2);
 
-        var listaVideo2 = videoRepository.findAll();
+        when(videoRepository.findAll())
+                .thenReturn((Flux.fromIterable(videos)));
+
+        var lista = videoRepository.findAll();
 
         // Assert
+        assertEquals(videos, lista.collectList().block());
         verify(videoRepository, times(2)).save(any(VideoModel.class));
         verify(videoRepository, times(1)).findAll();
 
-        // Verificar depois se 2 registros no conteudo....
+
 
     }
 

@@ -14,13 +14,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -152,7 +159,7 @@ public class VideoControllerTest {
 
 
     @Test
-    public void DeveDeletarVideo() {
+    public void GerarExcecao_NoDeveDeletarVideo_QuandoIdNaoExiste() {
 
         Integer id = 1;
         assertThatThrownBy(() -> videoController.deletarVideo(id,videoRepository))
@@ -165,14 +172,108 @@ public class VideoControllerTest {
 
 
     @Test
-    public void develistarVideos() {
-        fail("Teste não implementado!");
+    public void DeveDeletarVideo() {
+
+        // Assert
+        Integer id = 1;
+        String titulo = "Rambo1";
+        String descricao = "Filme de Guerra";
+        String urlVideo = "http://www.filmes.com.br/rambo1";
+        LocalDate dataPublicacao = LocalDate.of(1985,10,01);
+        VideosCategorias categoria = VideosCategorias.GUERRA;
+        Integer favorito = 1500; // Ajuste
+        Integer visualizacoes = 100;
+
+        VideoModel videoModel = new VideoModel(
+                id, titulo,  descricao, urlVideo, dataPublicacao, categoria, favorito, visualizacoes);
+
+        when(videoRepository.findById(any(Integer.class)))
+                .thenReturn(Mono.just(videoModel));
+
+        var deletado = videoController.deletarVideo(id,videoRepository);
+
+        // Assert
+        verify(videoRepository, times(1)).findById(any(Integer.class));
+        verify(videoRepository, times(1)).deleteById(any(Integer.class));
+    }
+
+
+
+    @Test
+    public void DevelistarVideos() {
+
+        VideoModel videoModel1  = new VideoModel();
+        VideoModel videoModel2  = new VideoModel();
+
+        Integer page = 1;
+        Integer size = 10;
+
+        PageRequest pageRequest =
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dataPublicacao"));
+
+        videoModel1.setId(1);
+        videoModel1.setTitulo("Rambo1");
+        videoModel1.setDescricao("Filme de Guerra Rambo1");
+        videoModel1.setDataPublicacao(LocalDate.of(1985,10,01));
+        videoModel1.setUrlVideo("http://filmes.com.br/rambo1");
+        videoModel1.setCategoria(VideosCategorias.GUERRA);
+        videoModel1.setFavorito(100);
+        videoModel1.setVisualizacoes(10000);
+
+
+        videoModel2.setId(2);
+        videoModel2.setTitulo("Uma linda Mulher");
+        videoModel2.setDescricao("Filme Romance");
+        videoModel2.setDataPublicacao(LocalDate.of(1999,12,01));
+        videoModel2.setUrlVideo("http://filmes.com.br/lindamulher");
+        videoModel2.setCategoria(VideosCategorias.ROMANCE);
+        videoModel2.setFavorito(1000);
+        videoModel2.setVisualizacoes(100001);
+
+        List<VideoModel> videos = Arrays.asList(videoModel1,videoModel2);
+
+        when(videoRepository.findAll())
+                .thenReturn((Flux.fromIterable(videos)));
+
+        var lista =  videoRepository.findAll();
+
+        var lista2 = videoController.listarVideos(page,size,videoRepository);
+
+
+        // Assert
+        assertEquals(videos, lista.collectList().block());
+        verify(videoRepository, times(1)).findAll();
+
     }
 
 
     @Test
     public  void  develistarVideosPorTitulo() {
-        fail("Teste não implementado!");
+
+        VideoModel videoModel1  = new VideoModel();
+        String nomeFilme = "Rambo1";
+
+        videoModel1.setId(1);
+        videoModel1.setTitulo(nomeFilme);
+        videoModel1.setDescricao("Filme de Guerra Rambo1");
+        videoModel1.setDataPublicacao(LocalDate.of(1985,10,01));
+        videoModel1.setUrlVideo("http://filmes.com.br/rambo1");
+        videoModel1.setCategoria(VideosCategorias.GUERRA);
+        videoModel1.setFavorito(100);
+        videoModel1.setVisualizacoes(10000);
+
+        List<VideoModel> videos = Arrays.asList(videoModel1);
+
+        when(videoRepository.findByTituloContainingIgnoreCase(nomeFilme))
+                .thenReturn((Flux.fromIterable(videos)));
+
+        var result = videoController.listarVideosPorTitulo(nomeFilme,videoRepository);
+
+
+        // Assert
+
+        assertEquals(videos, result.collectList().block());
+        verify(videoRepository, times(1)).findByTituloContainingIgnoreCase(any(String.class));
 
     }
 
