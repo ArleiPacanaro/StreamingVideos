@@ -85,7 +85,7 @@ public class VideoControllerTest {
     }
 
     @Test
-    public void GerarExcecao_DeveAtualizarVideo() {
+    public void GerarExcecao_NoDeveAtualizarVideo_RegistroNaoExiste() {
 
         // Assert
         Integer id = 1;
@@ -125,7 +125,7 @@ public class VideoControllerTest {
         String urlVideo = "http://www.filmes.com.br/rambo1";
         LocalDate dataPublicacao = LocalDate.of(1985,10,01);
         VideosCategorias categoria = VideosCategorias.GUERRA;
-        Integer favorito = 0;
+        Integer favorito = 1500; // Ajuste
         Integer visualizacoes = 100;
 
         VideoRecord videoRecord = new VideoRecord(
@@ -133,13 +133,19 @@ public class VideoControllerTest {
         );
 
 
-        // Assert
-        assertThatThrownBy(() -> videoController.atualizarVideo(videoRecord,videoRepository))
-                .isInstanceOf(RuntimeException.class);
+        VideoModel videoModel = new VideoModel(
+                id, titulo,  descricao, urlVideo, dataPublicacao, categoria, favorito, visualizacoes);
+
+        when(videoRepository.findById(any(Integer.class)))
+                .thenReturn(Mono.just(videoModel));
+
+        var videoAtualizado = videoController.atualizarVideo(videoRecord,videoRepository);
+
 
         // Assert
 
         verify(videoRepository, times(1)).findById(any(Integer.class));
+        verify(videoRepository, times(1)).save(any(VideoModel.class));
 
 
     }
