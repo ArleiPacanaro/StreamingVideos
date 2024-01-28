@@ -4,13 +4,11 @@ import com.challenge.videos.enumeration.VideosCategorias;
 import com.challenge.videos.external.model.VideoEstatisticasModel;
 import com.challenge.videos.external.model.VideoModel;
 import com.challenge.videos.external.repository.VideoRepository;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.testcontainers.containers.MongoDBContainer;
@@ -19,6 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 
@@ -39,7 +38,7 @@ public class VideoRespositoryIT {
 
     @BeforeAll
    static void setup(@Autowired VideoRepository videoRepository) {
-
+        mongoDBContainer.start();
         VideoModel video1 = new VideoModel(1, "Rambo", "Filme de Guerra Rambo1","http://filmes.com.br/rambo",LocalDate.of(1985,10,01),VideosCategorias.GUERRA, 1 ,2);
         VideoModel video2 = new VideoModel(2, "Uma linda Mulher", "Filme Romance", "http://filmes.com.br/linda-mulher", LocalDate.of(1999,12,01),VideosCategorias.ROMANCE, 2, 3);
         VideoModel video3 = new VideoModel(3, "Tropa de Elite", "Filme policial brasileiro","http://filmes.com.br/tropa-elite", LocalDate.of(2007,10,05),VideosCategorias.ACAO, 3,4);
@@ -51,6 +50,11 @@ public class VideoRespositoryIT {
        assertThat(registro1.block()).isEqualTo(video1);
        assertThat(registro2.block()).isEqualTo(video2);
        assertThat(registro3.block()).isEqualTo(video3);
+    }
+
+    @AfterAll
+    static void tearDown(){
+        mongoDBContainer.close();
     }
 
     @Test
@@ -100,16 +104,16 @@ public class VideoRespositoryIT {
 
     @Test
     void devePermitirAtualizarVideo() {
-        VideoModel novoVideo = new VideoModel(1, "Megatubarão 2", "Filme de tubarão","http://filmes.com.br/Megatubarao-2", LocalDate.of(2023,8,03),VideosCategorias.ACAO, 1,2);
-        var registro = videoRepository.save(novoVideo);
-        assertThat(registro.block()).isEqualTo(novoVideo);
+        VideoModel videoEdicao = new VideoModel(1, "Megatubarão 2", "Filme de tubarão","http://filmes.com.br/Megatubarao-2", LocalDate.of(2023,8,03),VideosCategorias.ACAO, 1,2);
+        var registro = videoRepository.save(videoEdicao);
+        assertThat(registro.block()).isEqualTo(videoEdicao);
     }
 
     @Test
     void devePermitirRemoverVideo() {
-        var apagou = videoRepository.deleteById(1);
+        StepVerifier.create(videoRepository.deleteById(1)).verifyComplete();
         var videoRemovido = videoRepository.existsById(1);
-        assertThat(videoRemovido.block()).isEqualTo(true);
+        assertThat(videoRemovido.block()).isEqualTo(false);
 
     }
 
