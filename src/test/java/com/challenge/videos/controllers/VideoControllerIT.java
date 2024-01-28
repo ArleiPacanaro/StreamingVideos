@@ -45,7 +45,7 @@ public class VideoControllerIT {
 
         var registro1 = videoRepository.save(video1);
         var registro2 = videoRepository.save(video2);
-        var registro3 =videoRepository.save(video3);
+        var registro3 = videoRepository.save(video3);
 
         assertThat(registro1.block()).isEqualTo(video1);
         assertThat(registro2.block()).isEqualTo(video2);
