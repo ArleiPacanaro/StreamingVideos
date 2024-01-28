@@ -28,7 +28,7 @@ public interface VideoRepository extends ReactiveMongoRepository<VideoModel, Int
 
   Flux<VideoModel> findByCategoria(VideosCategorias categorias);
 
-  @Query("{ $and: [{'categoria':{$gte:?0}},{'favorito':{$gte:?1}}] }")
+  @Query("{ $and: [{'categoria':{$eq:?0}},{'favorito':{$gte:?1}}] }")
   Flux<VideoModel> ListarVideosRecomendados(VideosCategorias categorias, Integer qtdFavoritados);
 
   @Aggregation("{ $group : { _id : null ,qtdTotalVideosFavoritos : { $sum : $favorito }"
