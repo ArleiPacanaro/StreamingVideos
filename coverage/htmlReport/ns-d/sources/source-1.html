@@ -1,0 +1,114 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > VideoRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.challenge.videos.external.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: VideoRepository (com.challenge.videos.external.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">VideoRepository$MockitoMock$hPMBOneq</td>
+  </tr>
+  <tr>
+    <td class="name">VideoRepository$MockitoMock$hPMBOneq$auxiliary$q4PBiMsM</td>
+  </tr>
+  <tr>
+    <td class="name">VideoRepository$MockitoMock$hPMBOneq$auxiliary$sduTALFy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.challenge.videos.external.repository;
+&nbsp;
+&nbsp;import com.challenge.videos.enumeration.VideosCategorias;
+&nbsp;import com.challenge.videos.external.model.VideoEstatisticasModel;
+&nbsp;import com.challenge.videos.external.model.VideoModel;
+&nbsp;import java.time.LocalDate;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.mongodb.repository.Aggregation;
+&nbsp;import org.springframework.data.mongodb.repository.Query;
+&nbsp;import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;import reactor.core.publisher.Flux;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * Interface da Repositório de Videos com MONGODB Reativo.
+&nbsp; */
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface VideoRepository extends ReactiveMongoRepository&lt;VideoModel, Integer&gt; {
+&nbsp;
+&nbsp;  Flux&lt;VideoModel&gt; findAllBy(Pageable pageable);
+&nbsp;
+&nbsp;  Flux&lt;VideoModel&gt; findByTituloContainingIgnoreCase(String titulo);
+&nbsp;
+&nbsp;  Flux&lt;VideoModel&gt; findByDataPublicacao(LocalDate dataDePublicacao);
+&nbsp;
+&nbsp;  Flux&lt;VideoModel&gt; findByCategoria(VideosCategorias categorias);
+&nbsp;
+&nbsp;  @Query(&quot;{ $and: [{&#39;categoria&#39;:{$eq:?0}},{&#39;favorito&#39;:{$gte:?1}}] }&quot;)
+&nbsp;  Flux&lt;VideoModel&gt; ListarVideosRecomendados(VideosCategorias categorias, Integer qtdFavoritados);
+&nbsp;
+&nbsp;  @Aggregation(&quot;{ $group : { _id : null ,qtdTotalVideosFavoritos : { $sum : $favorito }&quot;
+&nbsp;          + &quot;, avgTotalVideosAssistidos : {$avg : $visualizacoes}  } }&quot;)
+&nbsp;  Mono&lt;VideoEstatisticasModel&gt; listarEstatisticas();
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-28 21:32</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > IVideoGateway</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.challenge.videos.interfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: IVideoGateway (com.challenge.videos.interfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IVideoGateway</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.challenge.videos.interfaces;
+&nbsp;
+&nbsp;
+&nbsp;import com.challenge.videos.entities.VideoEntity;
+&nbsp;import com.challenge.videos.enumeration.VideosCategorias;
+&nbsp;import com.challenge.videos.external.model.VideoEstatisticasModel;
+&nbsp;import com.challenge.videos.external.model.VideoModel;
+&nbsp;import java.time.LocalDate;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import reactor.core.publisher.Flux;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;/**
+&nbsp; * Interface Adapter\Port para implementar o Gateway, L do Solid.
+&nbsp; */
+&nbsp;
+&nbsp;
+&nbsp;public interface IVideoGateway {
+&nbsp;
+&nbsp;  public Mono&lt;VideoModel&gt; registrarVideo(VideoEntity videoEntity);
+&nbsp;
+&nbsp;  public Mono&lt;VideoModel&gt; buscarVideoPorId(Integer id);
+&nbsp;
+&nbsp;  public Mono&lt;Void&gt; deletarVideoPorId(Integer id);
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideos(Pageable pageable);
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideosPorTitulo(String titulo);
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideosPorDataPublicacao(LocalDate dataDePublicacao);
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideosPorCategoria(VideosCategorias categorias);
+&nbsp;
+&nbsp;  Flux&lt;VideoModel&gt; listarVideosRecomendados(VideosCategorias categoria, Integer qtdFavoritados);
+&nbsp;
+&nbsp;  Mono&lt;VideoEstatisticasModel&gt; listarEstatisticas();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-28 21:32</div>
+</div>
+</body>
+</html>

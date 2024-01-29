@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > VideoController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.challenge.videos.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: VideoController (com.challenge.videos.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VideoController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89,5%
+  </span>
+  <span class="absValue">
+    (34/38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.challenge.videos.controllers;
+&nbsp;
+&nbsp;import com.challenge.videos.entities.VideoEntity;
+&nbsp;import com.challenge.videos.enumeration.VideosCategorias;
+&nbsp;import com.challenge.videos.external.model.VideoEstatisticasModel;
+&nbsp;import com.challenge.videos.external.model.VideoModel;
+&nbsp;import com.challenge.videos.external.repository.VideoRepository;
+&nbsp;import com.challenge.videos.gateways.VideoGateway;
+&nbsp;import com.challenge.videos.interfaces.IVideoGateway;
+&nbsp;import com.challenge.videos.presenters.VideoPresenter;
+&nbsp;import com.challenge.videos.records.VideoRecord;
+&nbsp;import com.challenge.videos.usecase.registrarVideoUseCase;
+&nbsp;
+&nbsp;import java.sql.SQLException;
+&nbsp;import java.time.LocalDate;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import reactor.core.publisher.Flux;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * API Rest para interface entre FRONT END e camada de CONTROLLER da Arquitetura Limpa .
+&nbsp; */
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class VideoController {</b>
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de registrar os videos.
+&nbsp;   */
+&nbsp;  public Mono&lt;VideoModel&gt; registrarVideo(VideoRecord videoRecord, VideoRepository databaseClient)
+&nbsp;          {
+&nbsp;
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;            VideoEntity videoEntity = null;</b>
+&nbsp;            try {
+<b class="fc">&nbsp;              videoEntity = registrarVideoUseCase.init(videoRecord);</b>
+<b class="nc">&nbsp;            } catch (IllegalAccessException e) {</b>
+<b class="nc">&nbsp;              throw new RuntimeException(e.getMessage());</b>
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;            return VideoPresenter.toRecord(videoGateway.registrarVideo(videoEntity));</b>
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de atualizar os videos.
+&nbsp;   */
+&nbsp;  public Mono&lt;VideoModel&gt; atualizarVideo(VideoRecord videoRecord, VideoRepository databaseClient)
+&nbsp;           {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;             VideoEntity videoEntity = null;</b>
+&nbsp;             try {
+<b class="fc">&nbsp;               videoEntity = registrarVideoUseCase.init(videoRecord);</b>
+<b class="nc">&nbsp;             } catch (IllegalAccessException e) {</b>
+<b class="nc">&nbsp;               throw new RuntimeException(e);</b>
+<b class="fc">&nbsp;             }</b>
+<b class="fc">&nbsp;             var videoEncontrado = videoGateway.buscarVideoPorId(videoRecord.id());</b>
+<b class="fc">&nbsp;    if (videoEncontrado != null) {</b>
+<b class="fc">&nbsp;      return VideoPresenter.toRecord(videoGateway.registrarVideo(videoEntity));</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      throw new RuntimeException(&quot;Não foi encontrado nenhum video com esse ID&quot;);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  /**
+&nbsp;   * Método de deletar os videos.
+&nbsp;   */
+&nbsp;
+&nbsp;  public Mono&lt;Void&gt; deletarVideo(Integer id, VideoRepository databaseClient)
+&nbsp;          {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;    var videoEncontrado = videoGateway.buscarVideoPorId(id);</b>
+<b class="fc">&nbsp;    if (videoEncontrado != null) {</b>
+<b class="fc">&nbsp;      return videoGateway.deletarVideoPorId(id);</b>
+&nbsp;    } else {
+<b class="fc">&nbsp;      throw new RuntimeException(</b>
+&nbsp;              &quot;Não foi encontrado na base um Video cadastrado com esse ID&quot;);
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de deletar os videos.
+&nbsp;   */
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideos(int page, int size, VideoRepository databaseClient) {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+&nbsp;
+<b class="fc">&nbsp;    PageRequest pageRequest =</b>
+<b class="fc">&nbsp;            PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, &quot;dataPublicacao&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;    return VideoPresenter.toList(videoGateway.listarVideos(pageRequest));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de deletar os videos.
+&nbsp;   */
+&nbsp;
+&nbsp;  public  Flux&lt;VideoModel&gt; listarVideosPorTitulo(String titulo, VideoRepository databaseClient) {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    return VideoPresenter.toList(videoGateway.listarVideosPorTitulo(titulo));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public  Flux&lt;VideoModel&gt; listarVideosPorData(LocalDate data, VideoRepository databaseClient) {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;    return VideoPresenter.toList(videoGateway.listarVideosPorDataPublicacao(data));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public  Flux&lt;VideoModel&gt; listarVideosPorCategoria(VideosCategorias categoria,
+&nbsp;                                                    VideoRepository databaseClient) {
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;    return VideoPresenter.toList(videoGateway.listarVideosPorCategoria(categoria));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de listar os videos recomendados.
+&nbsp;   */
+&nbsp;
+&nbsp;  public Flux&lt;VideoModel&gt; listarVideosRecomendados(VideosCategorias categoria,
+&nbsp;                                                   VideoRepository databaseClient) {
+&nbsp;
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+<b class="fc">&nbsp;    Integer qtdFavoritados = 1;</b>
+<b class="fc">&nbsp;    return VideoPresenter.toList(videoGateway.listarVideosRecomendados(categoria, qtdFavoritados));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Método de listar os videos recomendados.
+&nbsp;   */
+&nbsp;
+&nbsp;  public Mono&lt;VideoEstatisticasModel&gt; buscarEstatisticas(VideoRepository databaseClient) {
+&nbsp;
+<b class="fc">&nbsp;    IVideoGateway videoGateway = new VideoGateway(databaseClient);</b>
+&nbsp;
+<b class="fc">&nbsp;    return VideoPresenter.toRecordEstatistica(videoGateway.listarEstatisticas());</b>
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-28 21:32</div>
+</div>
+</body>
+</html>
