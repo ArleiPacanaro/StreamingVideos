@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
-@Setter
+
 public class VideoEstatisticasModel {
 
   private long qtdTotalVideosFavoritos;
